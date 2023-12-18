@@ -5,9 +5,22 @@ html
         title LMK 
         link(rel="preconnect" href="https://fonts.googleapis.com")
         link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
-        link(href="https://fonts.googleapis.com/css2?family=Rubik+Broken+Faxs&family=Roboto&display=swap" rel="stylesheet")
+        link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&family=Rubik+Broken+Fax&display=swap" rel="stylesheet")
         link(href="css/main" id="mainStylesheet" rel="stylesheet" type="text/css")
     body 
         include navbar.pug
-
+        
+        div(id="feed")
+            if messages
+                each message in messages
+                    div(id="post-"+message.id)
+                        div(class="profPic")= message.username.charAt(0)
+                        h3= message.username
+                        p= message.message
+                        div(class="likesCont")
+                            button(onclick=`likePost(${message.id})`)
+                                i(class="fa-regular fa-thumbs-up")
+                            p= message.likes
+            else 
+                p No messages!
         script(src="https://kit.fontawesome.com/224f862d86.js" crossorigin="anonymous")

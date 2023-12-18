@@ -2,6 +2,7 @@
     --main-bg-color: #1D1E18;
     --main-bg-hover: #0e0f0b;
     --main-text-color: #DEE5E5;
+    --main-text-hover: #aab3b3;
     --accent-color: #E05263;
     --accent-hover: #ae3a48;
 }
@@ -64,6 +65,272 @@ b, em{
 	color: var(--accent-color);
 }
 
-nav ul li:nth-child(0){
-    font-family: 'Rubik Broken Faxs', sans-serif;
+nav {
+    background-color: var(--accent-color);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 2;
+    box-shadow: 0px 1px 15px 1px rgba(0,0,0,0.75);
+}
+
+nav ul {
+    display: grid;
+    grid-template-columns: 55% 15% 15% 15%;
+}
+
+nav ul li {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+nav ul li:nth-child(1){
+    font-family: 'Rubik Broken Fax', sans-serif;
+    font-size: 48px;
+    padding: 15px;
+}
+
+nav ul li:nth-child(n+2) a {
+    padding: 28px;
+    font-size: 22px;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+nav ul li:nth-child(n+2) a:hover {
+    background-color: var(--accent-hover);
+}
+
+#feed {
+    width: 50%;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+}
+
+#feed > div {
+    background-color: var(--main-text-color);
+    color: var(--accent-hover);
+    padding: 30px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.profPic {
+    background-color: var(--accent-color);
+    color: var(--main-text-color);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75) inset;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 10px 13px;
+    font-size: 28px;
+    font-family: 'Rubik Broken Fax', sans-serif; 
+}
+
+#feed > div > h3 {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+#feed > div > p {
+    margin-top: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    line-height: 20px;
+    padding-bottom: 0;
+}
+
+form {
+    width: 500px;
+    display: block;
+    position: relative;
+    border: 1px solid var(--main-text-color);
+    margin: 0 auto;
+}
+
+form > input {
+    display: block;
+    background-color:transparent;
+    color: var(--main-text-color);
+    border: none;
+    border-bottom: 1px solid var(--main-text-color);
+    padding: 15px 25px;
+    margin: 40px;
+    box-sizing: border-box;
+    width: 50%;
+    font-size: 18px;
+}
+
+form > input::placeholder {
+    color: var(--main-text-hover);
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+form > input[type="submit"] {
+    color: var(--main-text-color);  
+    font-weight: 300;
+    border: 1px solid var(--main-text-color);
+    text-transform: uppercase;
+    width:auto;
+}
+
+form > input[type="submit"]:hover {
+    background-color: var(--accent-color);
+    cursor: pointer;
+}
+
+.myAccountPost {
+    background-color: var(--main-text-color);
+    width: 50%;
+    display: block;
+    margin: 50px auto;
+    position: relative;
+    color: var(--accent-color);
+    box-sizing: border-box;
+    line-height: 20px;
+    padding-bottom:0;
+    border-radius: 10px;
+}
+
+.myAccountPost > button {
+    background-color: transparent;
+    border:none;
+    padding: 0;
+}
+
+.myAccountPost > button > i {
+    padding: 30px;
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.myAccountPost > button > i:hover {
+    cursor:pointer;
+    background-color:var(--accent-color)
+}
+
+#myProfPic {
+    font-size: 40px;
+    font-family: 'Rubik Broken Fax', sans-serif;
+    background-color: var(--accent-color);
+    color: var(--main-text-color);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75) inset;
+    padding: 20px 25px;
+    border-radius: 50%;
+    display: block;
+    position:relative;
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.myPostMessage {
+    padding: 30px;
+    padding-bottom: 0;
+}
+
+#myUsername {
+    font-size: 26px;
+    padding: 20px 0;
+}
+
+#postCount, #myUsername, #resMessage {
+    text-align: center;
+    width: 100%;
+    display: block;
+    position: relative
+}
+
+#postCount {
+    font-size: 22px;
+    padding-bottom: 10px;
+}
+
+.likesCont {
+    width:100%;
+    display:block;
+    position:relative;
+    height:30px;
+}
+
+.likesCont > * {
+    float:right;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+#overlay {
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0,0,0,.75);
+    z-index: 3;
+    position:fixed;
+    top:0;
+    left:0;
+    display:none;
+    cursor:pointer;
+}
+
+#popup > textarea {
+    max-width: 450px;
+    min-width: 450px;
+    min-height: 100px;
+}
+
+#popup {
+    padding:30px;
+    margin:0 auto;
+    width:500px;
+    display:block;
+    margin-top:15vh;
+    background-color:var(--main-text-color);
+    border-radius:10px;
+    z-index:4;
+    cursor:default;
+}
+
+#createPostForm > * {
+    display: block;
+    margin: 30px;
+    font-size: 18px;
+    padding: 15px 25px;
+}
+
+#createPostForm > textarea {
+    background-color: transparent;
+    color: var(--main-text-color);
+    border: 1px solid var(--main-text-color);
+    min-width: 390px;
+    max-width: 390px;
+    height: 100px;
+}
+
+#createPostForm > button {
+    background-color: transparent;
+    border: 1px solid var(--main-text-color);
+    color: var(--main-text-color);
+    cursor:pointer;
+}
+
+#createPostForm > button:hover {
+    background-color: var(--accent-color);
+}
+
+#feed div:nth-child(n+2) {
+    margin-top:50px;
+}
+
+#createPostForm {
+    width: 500px;
+    display: block;
+    position: relative;
+    border: 1px solid var(--main-text-color);
+    margin: 0 auto;
 }

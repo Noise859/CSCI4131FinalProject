@@ -1,0 +1,22 @@
+doctype html 
+html
+    head 
+        meta(charset="utf-8")
+        title LMK 
+        link(rel="preconnect" href="https://fonts.googleapis.com")
+        link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+        link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&family=Rubik+Broken+Fax&display=swap" rel="stylesheet")
+        link(href="css/main" id="mainStylesheet" rel="stylesheet" type="text/css")
+    body 
+        include navbar.pug
+        form(action="/login" method="post" id="login-form" class="form")
+            input(type="text" id="username" name="username" placeholder="Username" required maxlength=20)
+            input(type="password" id="password" name="password" placeholder="Password" required maxlength=20)
+            input(type="submit" value="Login")
+        if userInfo
+            script.
+                document.addEventListener("DOMContentLoaded", function() {
+                    localStorage.setItem("userInfo", JSON.stringify(!{JSON.stringify(userInfo)}));
+                    window.location = "/account";
+                });
+        script(src="https://kit.fontawesome.com/224f862d86.js" crossorigin="anonymous")

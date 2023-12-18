@@ -2,17 +2,12 @@ doctype html
 html
     head 
         meta(charset="utf-8")
-        title Websites4Sale 
+        title LMK 
         link(rel="preconnect" href="https://fonts.googleapis.com")
         link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
-        link(href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&family=Roboto&display=swap" rel="stylesheet")
+        link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&family=Rubik+Broken+Fax&display=swap" rel="stylesheet")
         link(href="css/main" id="mainStylesheet" rel="stylesheet" type="text/css")
-    body(onload="startConfetti()" style="overflow:hidden")
+    body 
         include navbar.pug
-        h1(style="margin-top:150px") File not found 
-        h2 You've reached the end of the road! 
-        div(id="confettiContainer" style="z-index:-1;position:absolute;left:0;top:0;widht:100%;height:100vh")
-        
+        p(style="margin-top: 100px;") 404 - Not Found!
         script(src="https://kit.fontawesome.com/224f862d86.js" crossorigin="anonymous")
-        script(src="js/main.js" defer)
-        script(src="js/confetti.js" defer)

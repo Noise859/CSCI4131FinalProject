@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const basicAuth = require('express-basic-auth');
 const port = 4131;
+const data = require("./data")
 
 app.set("views", "templates");
 app.set("view engine", "pug");
@@ -12,24 +12,30 @@ app.use(express.json());
 app.use("/resources", express.static("/resources"));
 app.use(express.urlencoded({ extended: true }))
 
-app.use((req, res, next) => {
-    const originalSend = res.send;
-
-    res.send = function (body) {
-        console.log(`${req.method} ${req.url} with status ${res.statusCode} \n  - contactsList.length=${contactsList.length} : saleMessage=\"${saleMessage}\"`);
-
-        originalSend.call(this, body);
-    };
-
-    next();
-});
-
 app.get("/", async (req, res)=> {
-    res.status(200).render("mainpage");
+    let messages = await data.getMessages();
+    res.status(200).render("mainpage", {messages:messages});
 });
 
 app.get("/main", async (req, res)=> {
-    res.status(200).render("mainpage");
+    let messages = await data.getMessages();
+    res.status(200).render("mainpage", {messages:messages});
+});
+
+app.get("/login", async (req, res)=> {
+    res.status(200).render("login");
+});
+
+app.get("/createaccount", async (req, res)=> {
+    res.status(200).render("createaccount");
+});
+
+app.get("/account", async (req, res)=> {
+    res.status(200).render("myaccount");
+});
+
+app.get("/create-post", async (req, res)=> {
+    res.status(200).render("createpost");
 });
 
 app.get("/css/main", async (req, res)=> {
@@ -40,90 +46,78 @@ app.get("/js/main.js", async (req, res)=> {
     res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/main.js"));
 });
 
-app.get("/js/contact.js", async (req, res)=> {
-    res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/contact.js"));
+app.get("/js/account.js", async (req, res)=> {
+    res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/account.js"));
 });
 
-app.get("/js/table.js", async (req, res)=> {
-    res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/table.js"));
+app.get("/js/post.js", async (req, res)=> {
+    res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/post.js"));
 });
 
-app.get("/js/confetti.js", async (req, res)=> {
-    res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/confetti.js"));
-});
-
-app.get("/js/sale.js", async (req, res) => {
-    res.status(200).type("text/javascript").sendFile(path.join(__dirname, "resources/js/sale.js"));
-});
-
-app.get("/api/sale", async (req, res) => {
-    res.status(200).type('application/json').send(saleMessage);
-});
-
-app.post("/contact", async (req, res)=>{
-    var contactAdded = false;
-    if(req.body) {
-        if(req.body.nname != ("" || undefined || null) && req.body.eemail.includes("@") && req.body.eemail != ("" || undefined || null) && req.body.ddate != ("" || undefined || null) & req.body.mmoney != ("" || undefined || null)){
-            contactAdded = true;
-            var rred = "No :(";
-            if(req.body.ccheckbox == "on") {rred = "Yes :)"}
-            contactsList.push({
-                id: contactsList.length,
-                name: req.body.nname,
-                email: req.body.eemail,
-                preferredMeetingDate: req.body.ddate,
-                money: req.body.mmoney,
-                red: rred
-            });
-            res.status(201).render("contactsubmitted");
-        }
+app.post("/api/checkuser", async (req, res)=>{
+    let user = await data.login(req.body.username, req.body.password);
+    if(!user) {
+        res.status(400).type("text/plain").send("invalid");
     }
     else {
-        res.status(400).render("contacterror");
-    }
-    
-    if(!contactAdded) {
-        res.status(400).render("contacterror");
+        res.status(200).type("text/plain").send("valid");
     }
 });
 
-app.post("/api/sale", async (req, res)=> {
-    if(req.body.message != (null || undefined)){
-        if(req.body.message == ""){
-            res.status(400).type("text/plain").send("Message property empty");
+app.post("/login", async (req, res)=>{
+    let user = await data.login(req.body.username, req.body.password);
+    if(!user) {
+        res.status(400).render("loginerror", {message:"Username or password incorrect"})
+    }
+    res.status(200).render("login", {userInfo:user})
+});
+
+app.post("/api/getPostsByUser", async (req, res)=>{
+    let posts = await data.getPostsByUser(req.body.id);
+    res.status(200).type("application/json").send(posts)
+});
+
+app.post("/api/create-post", async (req, res)=>{
+    let user = await data.login(req.body.username, req.body.password);
+    if(user) {
+        if(req.body.message.length < 420) {
+            let post = await data.createPost(user.id, req.body.message);
+            res.status(200).type("text/plain").send("valid");
         }
-        else {
-            saleMessage = req.body.message;
-            res.status(200).type("text/plain").send(saleMessage);
-        }   
+        else 
+            res.status(400).type("text/plain").send("invalid");
     }
-    else {
-        res.status(400).type("text/plain").send("Message property invalid");
-    }
+    else 
+        res.status(400).type("text/plain").send("invalid");
 });
 
-app.delete("/api/contact", async (req, res) => {
-    var contactFound = false;
-    for(contact in contactsList) {
-        if(contactsList[contact].id == req.body.id) {
-            contactsList.splice(contact, 1)
-            contactFound = true;
-            res.status(200).send("ok");
-            break 
+app.post("/api/update-post", async (req, res)=>{
+    let user = await data.login(req.body.username, req.body.password);
+    if(user) {
+        if(req.body.message.length < 420) {
+            let post = await data.updatePost(req.body.id, req.body.message);
+            res.status(200).type("text/plain").send("valid");
         }
+        else 
+            res.status(400).type("text/plain").send("invalid");
     }
-    if(!contactFound) { res.status(404).type("text/plain").send("id not found");}
+    else 
+        res.status(400).type("text/plain").send("invalid");
 });
 
-app.delete("/api/sale", async (req, res) => {
-    saleMessage = "";
-    res.status(200).type("text/plain").send("ok");
+app.delete("/api/delete-post", async (req, res) => {
+    let user = await data.login(req.body.username, req.body.password);
+    if(user) {
+        let post = await data.deletePost(req.body.id);
+        if(post) 
+            res.status(200).type("text/plain").send("valid");
+    }
 });
 
 app.use((req, res, next) => {
     res.status(404).render("404");
 });
 
-app.listen(port , () => {
-    console.log(`App listening on port ${port}`);
-});
+setTimeout(() => {
+    app.listen(4131);
+  }, 1000);
