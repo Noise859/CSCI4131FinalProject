@@ -12,19 +12,34 @@ async function getUser(){
 }
 
 async function getMyPosts(){
+    let pageVars = window.location.search.split(/[?&]/);
+    let pageVarsParsed = {}
+    for(arg of pageVars) {
+        if(arg != "") {
+            let splitArg = arg.split(/=/);
+            pageVarsParsed[splitArg[0]] = splitArg[1];
+        }
+    }
     const result = await fetch("/api/getPostsByUser", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: JSON.parse(localStorage.getItem("userInfo")).id})
+        body: JSON.stringify({id: JSON.parse(localStorage.getItem("userInfo")).id, page:parseInt(pageVarsParsed.page), orderBy:pageVarsParsed.orderby})
     });
     const body = await result.json();
     if(result.ok) {
-        let myPosts = document.getElementById("userPosts")
-        document.getElementById("postCount").innerHTML = "Posts: " + body.length;
-        for(post of body) {
-            myPosts.innerHTML += `
+        console.log(body);
+        let myPosts = document.getElementById("userPosts");
+        let postHTML = `<div class="myAccountPost" id="myAccPagination"><p>Page:</p> `;
+        for(var i = 0; i < body.totalPages; i++) {
+            let page = i + 1;
+            postHTML += `<a class="${page == body.currentPage ? "curPage" : ""}" href="/account?page=${page}&orderby=${body.orderBy}">${page}</a>`;
+        }
+        postHTML += `</div>`;
+        document.getElementById("postCount").innerHTML = "Posts: " + body.allMessageCount;
+        for(post of body.posts) {
+            postHTML += `
             <div class="myAccountPost" id="post-${post.id}"><!--
                 --><p class="myPostMessage" id="post-message-${post.id}">
                     ${post.message}
@@ -37,6 +52,13 @@ async function getMyPosts(){
                 --></button><!--
             --></div>`
         }
+        postHTML += `<div class="myAccountPost" id="myAccPagination"><p>Page:</p> `;
+        for(var i = 0; i < body.totalPages; i++) {
+            let page = i + 1;
+            postHTML += `<a class="${page == body.currentPage ? "curPage" : ""}" href="/account?page=${page}&orderby=${body.orderBy}">${page}</a>`;
+        }
+        postHTML += "</div>"
+        myPosts.innerHTML = postHTML;
     }
 }
 
@@ -97,3 +119,4 @@ async function updatePost(id) {
 function stopPropagation(event) {
     event.stopPropagation();
 }
+

@@ -1,23 +1,34 @@
-// this package behaves just like the mysql one, but uses async await instead of callbacks.
-const mysql = require(`mysql-await`); // npm install mysql-await
+const mysql = require(`mysql-await`);
 
-// first -- I want a connection pool: https://www.npmjs.com/package/mysql#pooling-connections
-// this is used a bit differently, but I think it's just better -- especially if server is doing heavy work.
 var connPool = mysql.createPool({
-  connectionLimit: 5, // it's a shared resource, let's not go nuts.
-  host: "127.0.0.1",// this will work
+  connectionLimit: 5, 
+  host: "127.0.0.1",
   user: "C4131F23U154",
   database: "C4131F23U154",
-  password: "23766", // we really shouldn't be saving this here long-term -- and I probably shouldn't be sharing it with you...
+  password: "23766", 
 });
 
-// later you can use connPool.awaitQuery(query, data) -- it will return a promise for the query results.
 
-async function getMessages(){
+
+async function getAllMessages(){
   try {
     let retval =  await connPool.awaitQuery(`
+    SELECT * FROM messages;
+    `);
+    return retval;
+  } catch(error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function getMessages(pageNum, pageLimit, orderBy){
+  try {
+    let offset = (pageNum - 1) * pageLimit;
+    let retval =  await connPool.awaitQuery(`
     SELECT * FROM messages
-    ORDER BY id DESC;
+    ORDER BY ${orderBy} DESC
+    LIMIT ${pageLimit} OFFSET ${offset};
     `);
     for(message of retval) {
       user = await getUserById(message.poster);
@@ -31,6 +42,7 @@ async function getMessages(){
     return false;
   }
 }
+
 
 async function getUserById(id) {
   try {
@@ -61,10 +73,41 @@ async function login(username, password){
   }
 }
 
-async function getPostsByUser(id) {
+async function createAccount(username, password) {
   try {
     let retval = await connPool.awaitQuery(`
-    SELECT * FROM messages where poster="${id}";
+    INSERT INTO accounts (username, password)
+    VALUES ("${username}", "${password}");
+    `);
+    return retval;
+  } catch(error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function getAllPostsByUser(id) {
+  try {
+    let retval = await connPool.awaitQuery(`
+    SELECT * FROM messages 
+    WHERE poster="${id}"
+    ORDER BY id DESC;
+    `);
+    return retval
+  } catch(error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function getPostsByUser(id, pageNum, pageLimit, orderBy) {
+  try {
+    let offset = (pageNum - 1) * pageLimit;
+    let retval =  await connPool.awaitQuery(`
+    SELECT * FROM messages 
+    WHERE poster="${id}"
+    ORDER BY ${orderBy} DESC
+    LIMIT ${pageLimit} OFFSET ${offset};
     `);
     return retval
   } catch(error) {
@@ -114,5 +157,34 @@ async function createPost(id, message) {
   }
 }
 
+async function likePost(id) {
+  try {
+    let retval = await connPool.awaitQuery(`
+    SELECT * FROM messages WHERE id=${id};
+    `);
+    if(retval.length > 0) {
+      try {
+        let likesCount = retval[0].likes;
+        likesCount++;
+        retval = await connPool.awaitQuery(`
+        UPDATE messages
+        SET likes="${likesCount}"
+        WHERE id = ${id};
+        `);
+        return retval;
+      } catch(error) {
+        console.log(error);
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  } catch(error) {
+    console.log(error);
+    return false;
+  }
+}
 
-module.exports = {getMessages, getUserById, login, getPostsByUser, deletePost, createPost, updatePost}
+
+module.exports = {getAllPostsByUser, getAllMessages, getMessages, getUserById, login, getPostsByUser, deletePost, createPost, updatePost, createAccount, likePost}

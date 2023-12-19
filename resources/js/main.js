@@ -18,3 +18,8 @@ async function checkUser(){
         return false;
     }
 }
+
+function logout() {
+    localStorage.removeItem("userInfo");
+    window.location = "/main";
+}

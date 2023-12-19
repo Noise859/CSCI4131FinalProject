@@ -11,16 +11,50 @@ html
         include navbar.pug
         
         div(id="feed")
+            - var n = 0
+            div(id="pageCont")
+                p Page: 
+                while n < totalPages
+                    - const page = n + 1
+                    if page === currentPage
+                        a(class='curPage' href=`/main?page=${page}&orderby=${orderBy}`)= page
+                    else
+                        a(href=`/main?page=${page}&orderby=${orderBy}`)= page
+                    - n++
+                div(id="pageContFloat")
+                    p Sort By: 
+                    if orderBy === "id"
+                        a(class="curPage" href=`/main?orderby=id`) Most Recent
+                    else
+                        a(href=`/main?orderby=id`) Most Recent
+
+                    if orderBy === "likes"
+                        a(class="curPage" href=`/main?orderby=likes`) Likes
+                    else
+                        a(href=`/main?orderby=likes`) Likes
             if messages
                 each message in messages
                     div(id="post-"+message.id)
-                        div(class="profPic")= message.username.charAt(0)
+                        div(class="profPic")
+                            p= message.username.charAt(0)
                         h3= message.username
                         p= message.message
                         div(class="likesCont")
-                            button(onclick=`likePost(${message.id})`)
+                            button(class="likeBut" onclick=`likePost(${message.id})`)
                                 i(class="fa-regular fa-thumbs-up")
-                            p= message.likes
+                            p(id="likes-count-"+message.id)= message.likes
             else 
                 p No messages!
+            - var n = 0
+            div(id="pageCont")
+                p Page: 
+                while n < totalPages
+                    - const page = n + 1
+                    if page === currentPage
+                        a(class='curPage' href=`/main?page=${page}&orderby=${orderBy}`)= page
+                    else
+                        a(href=`/main?page=${page}&orderby=${orderBy}`)= page
+                    - n++
+        script(src="/js/main.js")
+        script(src="/js/post.js")
         script(src="https://kit.fontawesome.com/224f862d86.js" crossorigin="anonymous")

@@ -11,7 +11,7 @@ html
         include navbar.pug
         p(id="resMessage" style="margin-bottom: 30px;")
         section(id="createPostForm")
-            textarea(id="newMessage" maxlength="420")
+            textarea(id="newMessage" maxlength="420" placeholder="Enter your message here...")
             button(onclick="createPost()") Post
         script(src="/js/main.js")
         script(src="/js/post.js")
